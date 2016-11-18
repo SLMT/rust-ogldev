@@ -1,0 +1,7 @@
+[package]
+name = "ogldev"
+version = "0.1.0"
+authors = ["SLMT"]
+
+[dependencies]
+glium = "0.15.0"
