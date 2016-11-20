@@ -1,10 +1,10 @@
-# OGLdev tutorials in Rust
+# OGLdev Tutorials in Rust
 
-[OGLdev](http://ogldev.atspace.co.uk/) is a very nice tutorial that introduces basic knowledge for writing a OpenGL program. The original tutorial is based on C. However, I want to reproduce the same results in [Rust](https://www.rust-lang.org/) for fun and learning. So that is why I created this repository.
+[OGLdev](http://ogldev.atspace.co.uk/) is a very nice serise of tutorials that introduces basic knowledge for writing a OpenGL program. The original tutorials are written in C. However, I want to reproduce the same results in [Rust](https://www.rust-lang.org/) for fun and learning. So that is why I created this repository.
 
-I used [glium](https://github.com/tomaka/glium) to implement OpenGL in Rust. It is quite different from the one used by the original tutorials. You may see lots of difference between those tutorials and my implementations. Just stay calm. Take some time to read carefully. You will find that they are basically the same. At least they try to archive the same goals.
+I used [glium](https://github.com/tomaka/glium) to use OpenGL in Rust. It is quite different from the one used by the original tutorials. You may see lots of difference between those tutorials and my implementations. Just stay calm. Take some time to read carefully. You will find that they are basically the same. At least they try to archive the same goals.
 
-The [documents](http://tomaka.github.io/glium/glium/) of glium will be very useful when you try to understand what is going on in my implementations. Take a look :)
+The [documents](http://tomaka.github.io/glium/glium/) of glium will be very useful when you dig my code.
 
 ## The Goal of Each Tutorial
 
@@ -22,5 +22,5 @@ Build them:
 Run the `n`-th tutorial:
 
 ```
-> target\debug\tutorial_n.exe
+> target\debug\tutorial_n
 ```
