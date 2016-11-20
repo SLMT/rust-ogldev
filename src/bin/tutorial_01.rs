@@ -1,11 +1,11 @@
 extern crate glium;
 
 use glium::{DisplayBuild, Surface};
-use glium::glutin::Event;
+use glium::glutin::{Event, WindowBuilder};
 
 fn main() {
     // Set up and create a window
-    let display = glium::glutin::WindowBuilder::new()
+    let display = WindowBuilder::new()
             .with_dimensions(1024, 768)
             .with_srgb(Some(true))
             .with_title("Tutorial 01")
