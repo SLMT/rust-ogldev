@@ -20,9 +20,12 @@ implement_vertex!(Vertex, position);
 const EMPTY_UNIFORMS: EmptyUniforms = EmptyUniforms;
 
 fn create_vertex_buffer(display: &GlutinFacade) -> VertexBuffer<Vertex> {
-    let vertex = Vertex { position: [0.0, 0.0, 0.0] };
-    let point = vec![vertex];
-    let vertex_buffer = VertexBuffer::new(display, &point).unwrap();
+    let vertices = vec![
+        Vertex { position: [-1.0, -1.0, 0.0] },
+        Vertex { position: [1.0, -1.0, 0.0] },
+        Vertex { position: [0.0, 1.0, 0.0] }
+    ];
+    let vertex_buffer = VertexBuffer::new(display, &vertices).unwrap();
     vertex_buffer
 }
 
@@ -52,7 +55,7 @@ fn render_scene(display: &GlutinFacade, vertex_buffer: &VertexBuffer<Vertex>, pr
 
     frame.clear_color(0.0, 0.0, 0.0, 0.0);
 
-    frame.draw(vertex_buffer, &NoIndices(PrimitiveType::Points), program,
+    frame.draw(vertex_buffer, &NoIndices(PrimitiveType::TrianglesList), program,
         &EMPTY_UNIFORMS, &Default::default()).unwrap();
 
     frame.finish().unwrap();
@@ -63,7 +66,7 @@ fn main() {
     let display = WindowBuilder::new()
         .with_dimensions(1024, 768)
         .with_srgb(Some(true))
-        .with_title("Tutorial 02")
+        .with_title("Tutorial 03")
         .build_glium()
         .unwrap();
 
