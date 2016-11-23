@@ -61,7 +61,7 @@ fn render_scene(display: &GlutinFacade, vertex_buffer: &VertexBuffer<Vertex>, pr
     // Note that the matrix is in column-major order
     // so you need to transpose it for OpenGL
     let world: [[f32; 4]; 4] = Matrix4::new(
-        1.0, 0.0, 0.0, scale,
+        1.0, 0.0, 0.0, scale.sin(),
         0.0, 1.0, 0.0, 0.0,
         0.0, 0.0, 1.0, 0.0,
         0.0, 0.0, 0.0, 1.0
@@ -103,7 +103,7 @@ fn main() {
         scale += 0.0001;
 
         // Render
-        render_scene(&display, &vertex_buffer, &program, scale.sin());
+        render_scene(&display, &vertex_buffer, &program, scale);
 
         // Handle events
         for event in display.poll_events() {

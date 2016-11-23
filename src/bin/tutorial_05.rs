@@ -55,7 +55,7 @@ fn create_shaders(display: &GlutinFacade) -> Program {
 fn render_scene(display: &GlutinFacade, vertex_buffer: &VertexBuffer<Vertex>, program: &Program,
         scale: f32) {
 
-    let uniform = uniform!{ gScale: scale };
+    let uniform = uniform!{ gScale: scale.sin() };
 
     let mut frame = display.draw();
 
@@ -91,7 +91,7 @@ fn main() {
         scale += 0.0001;
 
         // Render
-        render_scene(&display, &vertex_buffer, &program, scale.sin());
+        render_scene(&display, &vertex_buffer, &program, scale);
 
         // Handle events
         for event in display.poll_events() {
