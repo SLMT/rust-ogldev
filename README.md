@@ -17,6 +17,7 @@ The [documents](http://tomaka.github.io/glium/glium/index.html) of glium will be
 6. [To Perform Translation Transformation](src/bin/tutorial_06.rs)
 7. [To Perform Rotation Transformation](src/bin/tutorial_07.rs)
 8. [To Perform Scaling Transformation](src/bin/tutorial_08.rs)
+9. [To Interpolate Color inside a Triangle](src/bin/tutorial_09.rs)
 
 ## How to Run It ?
 
