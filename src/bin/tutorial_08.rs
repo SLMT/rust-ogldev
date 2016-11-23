@@ -89,7 +89,7 @@ fn main() {
         .build_glium()
         .unwrap();
 
-    // Create a vertex buffer and indices
+    // Create a vertex buffer
     let vertex_buffer = create_vertex_buffer(&display);
 
     // Create a shader program
