@@ -70,7 +70,7 @@ fn main() {
     let display = WindowBuilder::new()
         .with_dimensions(1024, 768)
         .with_srgb(Some(true))
-        .with_title("Tutorial 03")
+        .with_title("Tutorial 04")
         .build_glium()
         .unwrap();
 

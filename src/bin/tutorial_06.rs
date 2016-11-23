@@ -66,7 +66,7 @@ fn render_scene(display: &GlutinFacade, vertex_buffer: &VertexBuffer<Vertex>, pr
         0.0, 0.0, 1.0, 0.0,
         0.0, 0.0, 0.0, 1.0
     ).transpose().into();
-    
+
     let uniform = uniform!{ gWorld: world };
 
     let mut frame = display.draw();
@@ -84,7 +84,7 @@ fn main() {
     let display = WindowBuilder::new()
         .with_dimensions(1024, 768)
         .with_srgb(Some(true))
-        .with_title("Tutorial 03")
+        .with_title("Tutorial 06")
         .build_glium()
         .unwrap();
 
