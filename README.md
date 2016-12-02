@@ -19,17 +19,12 @@ The [documents](http://tomaka.github.io/glium/glium/index.html) of glium will be
 8. [To Perform Scaling Transformation](src/bin/tutorial_08.rs)
 9. [To Interpolate Color inside a Triangle](src/bin/tutorial_09.rs)
 10. [To Use Index Buffers](src/bin/tutorial_10.rs)
+11. [To Concatenate Transformations](src/bin/tutorial_11.rs)
 
 ## How to Run It ?
 
-Build them:
+This command should build the whole project and run the `n`-th tutorial:
 
 ```
-> cargo build
-```
-
-Run the `n`-th tutorial:
-
-```
-> target\debug\tutorial_n
+> cargo run --bin tutorial_n
 ```
