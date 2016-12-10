@@ -21,6 +21,7 @@ The [documents](http://tomaka.github.io/glium/glium/index.html) of glium will be
 10. [To Draw with A Index Buffer](src/bin/tutorial_10.rs)
 11. [To Concatenate Transformations](src/bin/tutorial_11.rs)
 12. [To Perform Perspective Projection](src/bin/tutorial_12.rs)
+13. [To Perform View Transformation](src/bin/tutorial_13.rs)
 
 ## How to Run It ?
 
@@ -28,4 +29,10 @@ This command should build the whole project and run the `n`-th tutorial:
 
 ```
 > cargo run --bin tutorial_n
+```
+
+For example, to run the first tutorial:
+
+```
+> cargo run --bin tutorial_01
 ```
