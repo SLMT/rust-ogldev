@@ -1,11 +1,16 @@
 
 use cgmath::{Vector3, Matrix, Matrix4};
+use PersProjInfo;
 
 pub struct Pipeline {
     scale: Vector3<f32>,
     world_pos: Vector3<f32>,
     rotate_info: Vector3<f32>,
-    transformation: Matrix4<f32>
+
+    pers_proj_info: PersProjInfo,
+
+    w_transformation: Matrix4<f32>,
+    wp_transformation: Matrix4<f32>
 }
 
 impl Pipeline {
@@ -14,7 +19,14 @@ impl Pipeline {
             scale: Vector3::new(1.0, 1.0, 1.0),
             world_pos: Vector3::new(0.0, 0.0, 0.0),
             rotate_info: Vector3::new(0.0, 0.0, 0.0),
-            transformation: Matrix4::new(
+            pers_proj_info: PersProjInfo::default(),
+            w_transformation: Matrix4::new(
+                1.0, 0.0, 0.0, 0.0,
+                0.0, 1.0, 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0,
+                0.0, 0.0, 0.0, 1.0
+            ).transpose(),
+            wp_transformation: Matrix4::new(
                 1.0, 0.0, 0.0, 0.0,
                 0.0, 1.0, 0.0, 0.0,
                 0.0, 0.0, 1.0, 0.0,
@@ -41,13 +53,31 @@ impl Pipeline {
         self.rotate_info.z = rotate_z;
     }
 
-    pub fn get_trans(&mut self) -> Matrix4<f32> {
+    pub fn set_perspective_proj(&mut self, fov: f32, width: f32, height: f32, z_near: f32, z_far: f32) {
+        self.pers_proj_info = PersProjInfo {
+            fov: fov,
+            width: width,
+            height: height,
+            z_near: z_near,
+            z_far: z_far
+        }
+    }
+
+    pub fn get_world_trans(&mut self) -> Matrix4<f32> {
         let scale_trans = self.init_scale_transform();
         let rotate_trans = self.init_rotate_transform();
         let translation_trans = self.init_translation_transform();
 
-        self.transformation = translation_trans * rotate_trans * scale_trans;
-        self.transformation
+        self.w_transformation = translation_trans * rotate_trans * scale_trans;
+        self.w_transformation
+    }
+
+    pub fn get_wp_trans(&mut self) -> Matrix4<f32> {
+        self.get_world_trans();
+        let pers_proj_trans = self.init_pers_proj_transform();
+
+        self.wp_transformation = pers_proj_trans * self.w_transformation;
+        self.wp_transformation
     }
 
     fn init_scale_transform(&self) -> Matrix4<f32> {
@@ -94,6 +124,20 @@ impl Pipeline {
             0.0, 1.0, 0.0, self.world_pos.y,
             0.0, 0.0, 1.0, self.world_pos.z,
             0.0, 0.0, 0.0, 1.0
+        ).transpose()
+    }
+
+    fn init_pers_proj_transform(&self) -> Matrix4<f32> {
+        let p = &self.pers_proj_info;
+        let ar = p.width / p.height;
+        let z_range = p.z_near - p.z_far;
+        let tan_half_fov = (p.fov / 2.0).to_radians().tan();
+
+        Matrix4::new(
+            1.0 / (tan_half_fov * ar), 0.0, 0.0, 0.0,
+            0.0, 1.0 / tan_half_fov, 0.0, 0.0,
+            0.0, 0.0, (-p.z_near - p.z_far) / z_range, 2.0 * p.z_far * p.z_near / z_range,
+            0.0, 0.0, 1.0, 0.0,
         ).transpose()
     }
 }

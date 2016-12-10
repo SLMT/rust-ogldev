@@ -10,6 +10,9 @@ use glium::backend::glutin_backend::GlutinFacade;
 
 use ogldev::Pipeline;
 
+const WINDOW_WIDTH: u32 = 1024;
+const WINDOW_HEIGHT: u32 = 768;
+
 // Represent a 3D vertex
 #[derive(Copy, Clone)]
 struct Vertex {
@@ -78,12 +81,12 @@ fn render_scene(display: &GlutinFacade, vertex_buffer: &VertexBuffer<Vertex>,
 
     // Create a Pipeline
     let mut pipeline = Pipeline::new();
-    pipeline.scale((scale * 0.1).sin(), (scale * 0.1).sin(), (scale * 0.1).sin());
-    pipeline.world_pos(scale.sin(), 0.0, 0.0);
-    pipeline.rotate(scale.sin() * 90.0, scale.sin() * 90.0, scale.sin() * 90.0);
+    pipeline.rotate(0.0, scale, 0.0);
+    pipeline.world_pos(0.0, 0.0, 5.0);
+    pipeline.set_perspective_proj(30.0, WINDOW_WIDTH as f32, WINDOW_HEIGHT as f32, 1.0, 1000.0);
 
     // Set the uniform matrix
-    let world: [[f32; 4]; 4] = pipeline.get_world_trans().into();
+    let world: [[f32; 4]; 4] = pipeline.get_wp_trans().into();
     let uniform = uniform!{ gWorld: world };
 
     // Drawing
@@ -97,7 +100,7 @@ fn render_scene(display: &GlutinFacade, vertex_buffer: &VertexBuffer<Vertex>,
 fn main() {
     // Set up and create a window
     let display = WindowBuilder::new()
-        .with_dimensions(1024, 768)
+        .with_dimensions(WINDOW_WIDTH, WINDOW_HEIGHT)
         .with_srgb(Some(true))
         .with_title("Tutorial 11")
         .build_glium()
@@ -116,7 +119,7 @@ fn main() {
         // Change the scale
         // (I use a smaller factor than the one used in the original source code
         // since the original factor is too large in my case)
-        scale += 0.0001;
+        scale += 0.01;
 
         // Render
         render_scene(&display, &vertex_buffer, &index_buffer, &program, scale);
