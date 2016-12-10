@@ -1,6 +1,16 @@
 
 use cgmath::{Vector3, Matrix, Matrix4};
-use PersProjInfo;
+use graphical_math;
+use graphical_math::{PersProjInfo, Camera};
+
+fn default_matrix() -> Matrix4<f32> {
+    Matrix4::new(
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0
+    ).transpose()
+}
 
 pub struct Pipeline {
     scale: Vector3<f32>,
@@ -8,9 +18,13 @@ pub struct Pipeline {
     rotate_info: Vector3<f32>,
 
     pers_proj_info: PersProjInfo,
+    camera: Camera,
 
     w_transformation: Matrix4<f32>,
-    wp_transformation: Matrix4<f32>
+    v_transformation: Matrix4<f32>,
+    p_transformation: Matrix4<f32>,
+    wp_transformation: Matrix4<f32>,
+    wvp_transformation: Matrix4<f32>
 }
 
 impl Pipeline {
@@ -20,18 +34,16 @@ impl Pipeline {
             world_pos: Vector3::new(0.0, 0.0, 0.0),
             rotate_info: Vector3::new(0.0, 0.0, 0.0),
             pers_proj_info: PersProjInfo::default(),
-            w_transformation: Matrix4::new(
-                1.0, 0.0, 0.0, 0.0,
-                0.0, 1.0, 0.0, 0.0,
-                0.0, 0.0, 1.0, 0.0,
-                0.0, 0.0, 0.0, 1.0
-            ).transpose(),
-            wp_transformation: Matrix4::new(
-                1.0, 0.0, 0.0, 0.0,
-                0.0, 1.0, 0.0, 0.0,
-                0.0, 0.0, 1.0, 0.0,
-                0.0, 0.0, 0.0, 1.0
-            ).transpose()
+            camera: Camera {
+                pos: Vector3::new(0.0, 0.0, 0.0),
+                target: Vector3::new(0.0, 0.0, 1.0),
+                up: Vector3::new(0.0, 1.0, 0.0)
+            },
+            w_transformation: default_matrix(),
+            v_transformation: default_matrix(),
+            p_transformation: default_matrix(),
+            wp_transformation: default_matrix(),
+            wvp_transformation: default_matrix()
         }
     }
 
@@ -60,84 +72,56 @@ impl Pipeline {
             height: height,
             z_near: z_near,
             z_far: z_far
-        }
+        };
+    }
+
+    pub fn set_camera(&mut self, pos: Vector3<f32>, target: Vector3<f32>, up: Vector3<f32>) {
+        self.camera = Camera {
+            pos: pos,
+            target: target,
+            up: up
+        };
     }
 
     pub fn get_world_trans(&mut self) -> Matrix4<f32> {
-        let scale_trans = self.init_scale_transform();
-        let rotate_trans = self.init_rotate_transform();
-        let translation_trans = self.init_translation_transform();
+        let scale_trans = graphical_math::init_scale_transform(self.scale.x, self.scale.y, self.scale.z);
+        let rotate_trans = graphical_math::init_rotate_transform(self.rotate_info.x, self.rotate_info.y, self.rotate_info.z);
+        let translation_trans = graphical_math::init_translation_transform(self.world_pos.x, self.world_pos.y, self.world_pos.z);
 
         self.w_transformation = translation_trans * rotate_trans * scale_trans;
         self.w_transformation
     }
 
+    pub fn get_view_trans(&mut self) -> Matrix4<f32> {
+        let camera_translation_trans = graphical_math::init_translation_transform(
+            -self.camera.pos.x, -self.camera.pos.y, -self.camera.pos.z);
+        let camera_rotate_trans = graphical_math::init_camera_transform(
+            self.camera.target, self.camera.up);
+
+        self.v_transformation = camera_rotate_trans * camera_translation_trans;
+        self.v_transformation
+    }
+
+    pub fn get_project_trans(&mut self) -> Matrix4<f32> {
+        self.p_transformation = graphical_math::init_pers_proj_transform(self.pers_proj_info);
+        self.p_transformation
+    }
+
     pub fn get_wp_trans(&mut self) -> Matrix4<f32> {
         self.get_world_trans();
-        let pers_proj_trans = self.init_pers_proj_transform();
+
+        let pers_proj_trans = graphical_math::init_pers_proj_transform(self.pers_proj_info);
 
         self.wp_transformation = pers_proj_trans * self.w_transformation;
         self.wp_transformation
     }
 
-    fn init_scale_transform(&self) -> Matrix4<f32> {
-        Matrix4::new(
-            self.scale.x, 0.0, 0.0, 0.0,
-            0.0, self.scale.y, 0.0, 0.0,
-            0.0, 0.0, self.scale.z, 0.0,
-            0.0, 0.0, 0.0, 1.0
-        ).transpose()
-    }
+    pub fn get_wvp_trans(&mut self) -> Matrix4<f32> {
+        self.get_world_trans();
+        self.get_view_trans();
+        self.get_project_trans();
 
-    fn init_rotate_transform(&self) -> Matrix4<f32> {
-        let x = self.rotate_info.x.to_radians();
-        let y = self.rotate_info.y.to_radians();
-        let z = self.rotate_info.z.to_radians();
-
-        let rx = Matrix4::new(
-            1.0, 0.0, 0.0, 0.0,
-            0.0, x.cos(), -x.sin(), 0.0,
-            0.0, x.sin(), x.cos(), 0.0,
-            0.0, 0.0, 0.0, 1.0
-        ).transpose();
-
-        let ry = Matrix4::new(
-            y.cos(), 0.0, -y.sin(), 0.0,
-            0.0, 1.0, 0.0, 0.0,
-            y.sin(), 0.0, y.cos(), 0.0,
-            0.0, 0.0, 0.0, 1.0
-        ).transpose();
-
-        let rz = Matrix4::new(
-            z.cos(), -z.sin(), 0.0, 0.0,
-            z.sin(), z.cos(), 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            0.0, 0.0, 0.0, 1.0
-        ).transpose();
-
-        rz * ry * rx
-    }
-
-    fn init_translation_transform(&self) -> Matrix4<f32> {
-        Matrix4::new(
-            1.0, 0.0, 0.0, self.world_pos.x,
-            0.0, 1.0, 0.0, self.world_pos.y,
-            0.0, 0.0, 1.0, self.world_pos.z,
-            0.0, 0.0, 0.0, 1.0
-        ).transpose()
-    }
-
-    fn init_pers_proj_transform(&self) -> Matrix4<f32> {
-        let p = &self.pers_proj_info;
-        let ar = p.width / p.height;
-        let z_range = p.z_near - p.z_far;
-        let tan_half_fov = (p.fov / 2.0).to_radians().tan();
-
-        Matrix4::new(
-            1.0 / (tan_half_fov * ar), 0.0, 0.0, 0.0,
-            0.0, 1.0 / tan_half_fov, 0.0, 0.0,
-            0.0, 0.0, (-p.z_near - p.z_far) / z_range, 2.0 * p.z_far * p.z_near / z_range,
-            0.0, 0.0, 1.0, 0.0,
-        ).transpose()
+        self.wvp_transformation = self.p_transformation * self.v_transformation * self.w_transformation;
+        self.wvp_transformation
     }
 }

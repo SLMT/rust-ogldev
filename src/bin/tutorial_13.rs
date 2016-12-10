@@ -8,6 +8,8 @@ use glium::glutin::{Event, WindowBuilder};
 use glium::index::{IndexBuffer, PrimitiveType};
 use glium::backend::glutin_backend::GlutinFacade;
 
+use cgmath::{Vector3};
+
 use ogldev::Pipeline;
 
 const WINDOW_WIDTH: u32 = 1024;
@@ -50,12 +52,12 @@ fn create_shaders(display: &GlutinFacade) -> Program {
 
         layout (location = 0) in vec3 position;
 
-        uniform mat4 gWorld;
+        uniform mat4 gWVP;
 
         out vec4 color;
 
         void main() {
-            gl_Position = gWorld * vec4(position, 1.0);
+            gl_Position = gWVP * vec4(position, 1.0);
             color = vec4(clamp(position, 0.0, 1.0), 1.0);
         }
     "#;
@@ -82,12 +84,16 @@ fn render_scene(display: &GlutinFacade, vertex_buffer: &VertexBuffer<Vertex>,
     // Create a Pipeline
     let mut pipeline = Pipeline::new();
     pipeline.rotate(0.0, scale, 0.0);
-    pipeline.world_pos(0.0, 0.0, 5.0);
-    pipeline.set_perspective_proj(30.0, WINDOW_WIDTH as f32, WINDOW_HEIGHT as f32, 1.0, 1000.0);
+    pipeline.world_pos(0.0, 0.0, 3.0);
+    let camera_pos = Vector3::new(0.0, 0.0, -3.0);
+    let camera_target = Vector3::new(0.0, 0.0, 2.0);
+    let camera_up = Vector3::new(0.0, 1.0, 0.0);
+    pipeline.set_camera(camera_pos, camera_target, camera_up);
+    pipeline.set_perspective_proj(60.0, WINDOW_WIDTH as f32, WINDOW_HEIGHT as f32, 1.0, 100.0);
 
     // Set the uniform matrix
-    let world: [[f32; 4]; 4] = pipeline.get_wp_trans().into();
-    let uniform = uniform!{ gWorld: world };
+    let wvp: [[f32; 4]; 4] = pipeline.get_wvp_trans().into();
+    let uniform = uniform!{ gWVP: wvp };
 
     // Drawing
     let mut frame = display.draw();
@@ -102,7 +108,7 @@ fn main() {
     let display = WindowBuilder::new()
         .with_dimensions(WINDOW_WIDTH, WINDOW_HEIGHT)
         .with_srgb(Some(true))
-        .with_title("Tutorial 12")
+        .with_title("Tutorial 13")
         .build_glium()
         .unwrap();
 
