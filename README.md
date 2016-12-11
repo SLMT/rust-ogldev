@@ -8,6 +8,8 @@ The [documents](http://tomaka.github.io/glium/glium/index.html) of glium will be
 
 ## The Goal of Each Tutorial
 
+The titles below summarize the goals of the tutorials on [OGLdev](http://ogldev.atspace.co.uk/). Each of them links to a Rust implementation of the corresponding tutorial.
+
 1. [To Create A Window](src/bin/tutorial_01.rs)
 2. [To Draw A Dot](src/bin/tutorial_02.rs)
 3. [To Draw A Triangle](src/bin/tutorial_03.rs)
