@@ -3,14 +3,15 @@ extern crate glium;
 extern crate ogldev;
 
 use glium::{DisplayBuild, Surface, VertexBuffer, Program};
-use glium::glutin::{Event, WindowBuilder};
+use glium::glutin;
+use glium::glutin::{Event, WindowBuilder, VirtualKeyCode};
 use glium::index::{IndexBuffer, PrimitiveType};
 use glium::backend::glutin_backend::GlutinFacade;
 
 use ogldev::{Camera, Pipeline};
 
-const WINDOW_WIDTH: u32 = 1024;
-const WINDOW_HEIGHT: u32 = 768;
+const WINDOW_WIDTH: u32 = 1920;
+const WINDOW_HEIGHT: u32 = 1080;
 
 // Represent a 3D vertex
 #[derive(Copy, Clone)]
@@ -76,7 +77,10 @@ fn create_shaders(display: &GlutinFacade) -> Program {
 }
 
 fn render_scene(display: &GlutinFacade, vertex_buffer: &VertexBuffer<Vertex>,
-        index_buffer: &IndexBuffer<u32>, program: &Program, camera: &Camera, scale: f32) {
+        index_buffer: &IndexBuffer<u32>, program: &Program, camera: &mut Camera, scale: f32) {
+
+    // Notify the camera
+    camera.on_render();
 
     // Create a Pipeline
     let mut pipeline = Pipeline::new();
@@ -101,8 +105,9 @@ fn main() {
     // Set up and create a window
     let display = WindowBuilder::new()
         .with_dimensions(WINDOW_WIDTH, WINDOW_HEIGHT)
+        .with_fullscreen(glutin::get_primary_monitor())
         .with_srgb(Some(true))
-        .with_title("Tutorial 14")
+        .with_title("Tutorial 15")
         .build_glium()
         .unwrap();
 
@@ -125,14 +130,20 @@ fn main() {
         scale += 0.01;
 
         // Render
-        render_scene(&display, &vertex_buffer, &index_buffer, &program, &camera, scale);
+        render_scene(&display, &vertex_buffer, &index_buffer, &program, &mut camera, scale);
 
         // Handle events
         for event in display.poll_events() {
             match event {
                 Event::Closed => return,
+                Event::KeyboardInput(_, _, Some(VirtualKeyCode::Q)) => {
+                    std::process::exit(0);
+                },
                 Event::KeyboardInput(_, _, Some(key)) => {
                     camera.on_key_board(key);
+                },
+                Event::MouseMoved(x, y) => {
+                    camera.on_mouse(x, y);
                 },
                 _ => ()
             }
