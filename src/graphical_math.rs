@@ -10,12 +10,6 @@ pub struct PersProjInfo {
     pub z_far: f32
 }
 
-pub struct Camera {
-    pub pos: Vector3<f32>,
-    pub target: Vector3<f32>,
-    pub up: Vector3<f32>
-}
-
 pub fn init_scale_transform(scale_x: f32, scale_y: f32, scale_z: f32) -> Matrix4<f32> {
     Matrix4::new(
         scale_x, 0.0, 0.0, 0.0,

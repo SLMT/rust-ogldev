@@ -1,7 +1,8 @@
 
 use cgmath::{Vector3, Matrix, Matrix4};
 use graphical_math;
-use graphical_math::{PersProjInfo, Camera};
+use graphical_math::PersProjInfo;
+use camera::Camera;
 
 fn default_matrix() -> Matrix4<f32> {
     Matrix4::new(
@@ -34,11 +35,7 @@ impl Pipeline {
             world_pos: Vector3::new(0.0, 0.0, 0.0),
             rotate_info: Vector3::new(0.0, 0.0, 0.0),
             pers_proj_info: PersProjInfo::default(),
-            camera: Camera {
-                pos: Vector3::new(0.0, 0.0, 0.0),
-                target: Vector3::new(0.0, 0.0, 1.0),
-                up: Vector3::new(0.0, 1.0, 0.0)
-            },
+            camera: Camera::default(),
             w_transformation: default_matrix(),
             v_transformation: default_matrix(),
             p_transformation: default_matrix(),
@@ -76,11 +73,7 @@ impl Pipeline {
     }
 
     pub fn set_camera(&mut self, pos: Vector3<f32>, target: Vector3<f32>, up: Vector3<f32>) {
-        self.camera = Camera {
-            pos: pos,
-            target: target,
-            up: up
-        };
+        self.camera = Camera::new(pos, target, up);
     }
 
     pub fn get_world_trans(&mut self) -> Matrix4<f32> {
@@ -94,9 +87,9 @@ impl Pipeline {
 
     pub fn get_view_trans(&mut self) -> Matrix4<f32> {
         let camera_translation_trans = graphical_math::init_translation_transform(
-            -self.camera.pos.x, -self.camera.pos.y, -self.camera.pos.z);
+            -self.camera.get_pos().x, -self.camera.get_pos().y, -self.camera.get_pos().z);
         let camera_rotate_trans = graphical_math::init_camera_transform(
-            self.camera.target, self.camera.up);
+            self.camera.get_target(), self.camera.get_up());
 
         self.v_transformation = camera_rotate_trans * camera_translation_trans;
         self.v_transformation
