@@ -26,6 +26,8 @@ The titles below summarize the goals of the tutorials on [OGLdev](http://ogldev.
 13. [To Perform View Transformation](src/bin/tutorial_13.rs)
 14. [To Move The Camera Using Arrow Keys On The Keyboard](src/bin/tutorial_14.rs)
 15. [To Move The Camera Using Both The Keyboard And The Mouse](src/bin/tutorial_15.rs)
+16. [To Draw with Textures](src/bin/tutorial_16.rs)
+  - There is lots of difference between this one and the original tutorial, because `glium` does many great jobs in Rust and we just need to add a few code to make the same effect.
 
 ## How to Run It ?
 

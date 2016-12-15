@@ -6,3 +6,4 @@ authors = ["SLMT"]
 [dependencies]
 glium = "0.15.0"
 cgmath = "0.12.0"
+image = "*"
